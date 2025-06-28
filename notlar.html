@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notlar - Öğrenci Bilgi Sistemi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-graduation-cap me-2"></i>ÖBS</h3>
+      <p>Öğrenci Bilgi Sistemi</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="ogrenci-ekle.html" class="nav-link">
+          <i class="fas fa-user-plus"></i>
+          Öğrenci Ekle
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="dersler.html" class="nav-link">
+          <i class="fas fa-book"></i>
+          Dersler
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="notlar.html" class="nav-link active">
+          <i class="fas fa-chart-bar"></i>
+          Notlar
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="profil.html" class="nav-link">
+          <i class="fas fa-user"></i>
+          Profil
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link logout-btn text-danger">
+          <i class="fas fa-sign-out-alt"></i>
+          Çıkış
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button class="btn btn-primary d-md-none position-fixed top-0 start-0 m-3 mobile-menu-btn" style="z-index: 1001;">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+    <div class="content-header fade-in">
+      <h1><i class="fas fa-chart-bar me-2 text-gradient"></i>Notlar</h1>
+      <p>Ders seçin, o dersi alan öğrencileri görüntüleyin ve notlarını girin.</p>
+    </div>
+    <!-- Ders Seçimi -->
+    <div class="form-container shadow-custom fade-in mb-4">
+      <h5 class="mb-3"><i class="fas fa-book me-2"></i>Ders Seçimi</h5>
+      <div class="mb-3">
+        <label class="form-label" for="dersSecimi">Ders Seçin</label>
+        <select class="form-select" id="dersSecimi">
+          <option selected disabled value="">Ders Seçin</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="dersiGetirBtn">
+        <i class="fas fa-arrow-right me-2"></i>Öğrencileri Listele
+      </button>
+    </div>
+    <!-- Öğrenci ve Not Girişi Tablosu -->
+    <div class="card shadow-custom fade-in mb-4" id="notGirisiCard" style="display:none;">
+      <div class="card-header">
+        <h5><i class="fas fa-users me-2"></i>Öğrenci Listesi ve Not Girişi</h5>
+        <span id="seciliDersInfo" class="badge bg-primary"></span>
+      </div>
+      <div class="card-body">
+        <form id="topluNotForm">
+          <div id="ogrenciNotTablosu"></div>
+          <button class="btn btn-success mt-3" type="submit">
+            <i class="fas fa-save me-2"></i>Tüm Notları Kaydet
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- Not Listesi -->
+    <div class="card mt-4 shadow-custom fade-in">
+      <div class="card-header">
+        <h5><i class="fas fa-list me-2"></i>Not Listesi</h5>
+      </div>
+      <div class="card-body">
+        <div id="notListesi">
+          <div class="text-center">
+            <div class="spinner"></div>
+            <p class="mt-2">Yükleniyor...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Sayfa yüklendiğinde dersleri getir
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDersSecimi();
+      loadNotlar();
+    });
+
+    // Dersleri select'e yükle
+    function loadDersSecimi() {
+      const dersler = JSON.parse(localStorage.getItem('dersler')) || [];
+      const dersSecimi = document.getElementById('dersSecimi');
+      dersSecimi.innerHTML = '<option selected disabled value="">Ders Seçin</option>';
+      dersler.forEach(ders => {
+        const option = document.createElement('option');
+        option.value = ders.id;
+        option.textContent = `${ders.dersKodu} - ${ders.dersAdi} (${ders.bolum})`;
+        dersSecimi.appendChild(option);
+      });
+    }
+
+    // Ders seçildiğinde öğrencileri getir
+    document.getElementById('dersiGetirBtn').addEventListener('click', function() {
+      const dersId = document.getElementById('dersSecimi').value;
+      if (!dersId) {
+        showAlert('Lütfen bir ders seçin!', 'warning');
+        return;
+      }
+      const dersler = JSON.parse(localStorage.getItem('dersler')) || [];
+      const ders = dersler.find(d => d.id === dersId);
+      if (!ders) {
+        showAlert('Ders bulunamadı!', 'danger');
+        return;
+      }
+      // O dersi alan öğrenciler (aynı bölümdeki öğrenciler)
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const ogrenciList = ogrenciler.filter(o => o.bolum === ders.bolum);
+      if (ogrenciList.length === 0) {
+        showAlert('Bu dersi alan öğrenci bulunamadı!', 'warning');
+        document.getElementById('notGirisiCard').style.display = 'none';
+        return;
+      }
+      // Tabloyu oluştur
+      let html = '<div class="table-responsive"><table class="table"><thead><tr><th>Ad Soyad</th><th>Numara</th><th>Not</th></tr></thead><tbody>';
+      ogrenciList.forEach((ogrenci, i) => {
+        html += `<tr>
+          <td>${escapeHtml(ogrenci.ad)} ${escapeHtml(ogrenci.soyad)}</td>
+          <td>${escapeHtml(ogrenci.numara)}</td>
+          <td><input type="number" class="form-control" name="puan_${ogrenci.numara}" min="0" max="100" placeholder="0-100"></td>
+        </tr>`;
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('ogrenciNotTablosu').innerHTML = html;
+      document.getElementById('seciliDersInfo').textContent = `${ders.dersKodu} - ${ders.dersAdi} (${ders.bolum})`;
+      document.getElementById('notGirisiCard').style.display = 'block';
+    });
+
+    // Toplu not kaydetme
+    document.getElementById('topluNotForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const dersId = document.getElementById('dersSecimi').value;
+      const dersler = JSON.parse(localStorage.getItem('dersler')) || [];
+      const ders = dersler.find(d => d.id === dersId);
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const ogrenciList = ogrenciler.filter(o => o.bolum === ders.bolum);
+      const formData = new FormData(e.target);
+      let notlar = JSON.parse(localStorage.getItem('notlar')) || [];
+      let kayitSayisi = 0;
+      ogrenciList.forEach(ogrenci => {
+        const puanStr = formData.get('puan_' + ogrenci.numara);
+        if (puanStr !== null && puanStr !== "") {
+          const puan = parseFloat(puanStr);
+          if (!isNaN(puan) && puan >= 0 && puan <= 100) {
+            notlar.push({
+              id: generateId(),
+              no: ogrenci.numara,
+              ders: ders.dersAdi,
+              dersKodu: ders.dersKodu,
+              puan: puan,
+              createdAt: new Date().toISOString()
+            });
+            kayitSayisi++;
+          }
+        }
+      });
+      localStorage.setItem('notlar', JSON.stringify(notlar));
+      showAlert(`${kayitSayisi} öğrencinin notu kaydedildi!`, 'success');
+      loadNotlar();
+      document.getElementById('notGirisiCard').style.display = 'none';
+      document.getElementById('dersSecimi').value = '';
+    });
+  </script>
+</body>
+</html>

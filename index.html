@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Öğrenci Bilgi Sistemi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-graduation-cap me-2"></i>ÖBS</h3>
+      <p>Öğrenci Bilgi Sistemi</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="index.html" class="nav-link active">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="ogrenci-ekle.html" class="nav-link">
+          <i class="fas fa-user-plus"></i>
+          Öğrenci Ekle
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="dersler.html" class="nav-link">
+          <i class="fas fa-book"></i>
+          Dersler
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="notlar.html" class="nav-link">
+          <i class="fas fa-chart-bar"></i>
+          Notlar
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="raporlar.html" class="nav-link">
+          <i class="fas fa-file-alt"></i>
+          Raporlar
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="profil.html" class="nav-link">
+          <i class="fas fa-user"></i>
+          Profil
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link logout-btn text-danger">
+          <i class="fas fa-sign-out-alt"></i>
+          Çıkış
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button class="btn btn-primary d-md-none position-fixed top-0 start-0 m-3 mobile-menu-btn" style="z-index: 1001;">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Alert Container -->
+    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <!-- Content Header -->
+    <div class="content-header fade-in">
+      <h1><i class="fas fa-tachometer-alt me-2 text-gradient"></i>Dashboard</h1>
+      <p>Öğrenci bilgi sisteminize hoş geldiniz. Bu panel üzerinden tüm işlemlerinizi yönetebilirsiniz.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3 mb-3">
+        <div class="stats-card fade-in">
+          <i class="fas fa-users fa-2x mb-3"></i>
+          <h3 id="ogrenciSayisi">0</h3>
+          <p>Toplam Öğrenci</p>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="stats-card fade-in" style="animation-delay: 0.2s;">
+          <i class="fas fa-chart-bar fa-2x mb-3"></i>
+          <h3 id="notSayisi">0</h3>
+          <p>Toplam Not</p>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="stats-card fade-in" style="animation-delay: 0.4s;">
+          <i class="fas fa-calculator fa-2x mb-3"></i>
+          <h3 id="ortalamaNot">0</h3>
+          <p>Ortalama Not</p>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="stats-card fade-in" style="animation-delay: 0.6s;">
+          <i class="fas fa-book fa-2x mb-3"></i>
+          <h3 id="dersSayisi">0</h3>
+          <p>Toplam Ders</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-chart-pie me-2"></i>Bölümlere Göre Öğrenci Dağılımı</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="bolumChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-chart-line me-2"></i>Not Dağılımı</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="notChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-bolt me-2"></i>Hızlı İşlemler</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-2 mb-3">
+                <a href="ogrenci-ekle.html" class="btn btn-primary w-100">
+                  <i class="fas fa-user-plus me-2"></i>Öğrenci Ekle
+                </a>
+              </div>
+              <div class="col-md-2 mb-3">
+                <a href="dersler.html" class="btn btn-info w-100">
+                  <i class="fas fa-book me-2"></i>Ders Ekle
+                </a>
+              </div>
+              <div class="col-md-2 mb-3">
+                <a href="notlar.html" class="btn btn-success w-100">
+                  <i class="fas fa-plus me-2"></i>Not Ekle
+                </a>
+              </div>
+              <div class="col-md-2 mb-3">
+                <a href="raporlar.html" class="btn btn-warning w-100">
+                  <i class="fas fa-file-alt me-2"></i>Rapor Al
+                </a>
+              </div>
+              <div class="col-md-2 mb-3">
+                <button class="btn btn-info w-100" onclick="exportData()">
+                  <i class="fas fa-download me-2"></i>Veri İndir
+                </button>
+              </div>
+              <div class="col-md-2 mb-3">
+                <button class="btn btn-danger w-100" onclick="clearData()">
+                  <i class="fas fa-trash me-2"></i>Verileri Temizle
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Data -->
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-users me-2"></i>Son Eklenen Öğrenciler</h5>
+          </div>
+          <div class="card-body">
+            <div id="recentOgrenciler">
+              <div class="text-center">
+                <div class="spinner"></div>
+                <p class="mt-2">Yükleniyor...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-chart-bar me-2"></i>Son Eklenen Notlar</h5>
+          </div>
+          <div class="card-body">
+            <div id="recentNotlar">
+              <div class="text-center">
+                <div class="spinner"></div>
+                <p class="mt-2">Yükleniyor...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Info -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-info-circle me-2"></i>Sistem Bilgileri</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <p><strong>Son Giriş:</strong> <span id="lastLogin">-</span></p>
+              </div>
+              <div class="col-md-3">
+                <p><strong>Toplam İşlem:</strong> <span id="totalActions">0</span></p>
+              </div>
+              <div class="col-md-3">
+                <p><strong>Sistem Durumu:</strong> <span class="badge bg-success">Aktif</span></p>
+              </div>
+              <div class="col-md-3">
+                <p><strong>Versiyon:</strong> <span>v3.0</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Dashboard özel fonksiyonları
+    function exportData() {
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const notlar = JSON.parse(localStorage.getItem('notlar')) || [];
+      const dersler = JSON.parse(localStorage.getItem('dersler')) || [];
+      
+      const data = {
+        ogrenciler: ogrenciler,
+        notlar: notlar,
+        dersler: dersler,
+        exportDate: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `obs_data_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showAlert('Veriler başarıyla indirildi!', 'success');
+    }
+    
+    function clearData() {
+      if (confirm('Tüm verileri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+        localStorage.removeItem('ogrenciler');
+        localStorage.removeItem('notlar');
+        localStorage.removeItem('dersler');
+        showAlert('Tüm veriler silindi!', 'success');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    }
+    
+    // Ortalama not hesaplama
+    function calculateAverage() {
+      const notlar = JSON.parse(localStorage.getItem('notlar')) || [];
+      if (notlar.length === 0) return 0;
+      
+      const total = notlar.reduce((sum, not) => sum + not.puan, 0);
+      return (total / notlar.length).toFixed(2);
+    }
+
+    // Grafikleri oluştur
+    function createCharts() {
+      // Bölüm dağılımı grafiği
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const bolumData = {};
+      ogrenciler.forEach(ogrenci => {
+        bolumData[ogrenci.bolum] = (bolumData[ogrenci.bolum] || 0) + 1;
+      });
+
+      const bolumCtx = document.getElementById('bolumChart').getContext('2d');
+      new Chart(bolumCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(bolumData),
+          datasets: [{
+            data: Object.values(bolumData),
+            backgroundColor: [
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+
+      // Not dağılımı grafiği
+      const notlar = JSON.parse(localStorage.getItem('notlar')) || [];
+      const notRanges = {
+        '90-100': 0,
+        '80-89': 0,
+        '70-79': 0,
+        '60-69': 0,
+        '50-59': 0,
+        '0-49': 0
+      };
+
+      notlar.forEach(not => {
+        if (not.puan >= 90) notRanges['90-100']++;
+        else if (not.puan >= 80) notRanges['80-89']++;
+        else if (not.puan >= 70) notRanges['70-79']++;
+        else if (not.puan >= 60) notRanges['60-69']++;
+        else if (not.puan >= 50) notRanges['50-59']++;
+        else notRanges['0-49']++;
+      });
+
+      const notCtx = document.getElementById('notChart').getContext('2d');
+      new Chart(notCtx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(notRanges),
+          datasets: [{
+            label: 'Öğrenci Sayısı',
+            data: Object.values(notRanges),
+            backgroundColor: '#667eea',
+            borderColor: '#764ba2',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+    
+    // Dashboard yüklendiğinde çalışacak ek fonksiyonlar
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ortalama notu güncelle
+      const ortalamaElement = document.getElementById('ortalamaNot');
+      if (ortalamaElement) {
+        const ortalama = calculateAverage();
+        animateNumber(ortalamaElement, 0, parseFloat(ortalama));
+      }
+      
+      // Ders sayısını güncelle
+      const dersSayisiElement = document.getElementById('dersSayisi');
+      if (dersSayisiElement) {
+        const dersler = JSON.parse(localStorage.getItem('dersler')) || [];
+        dersSayisiElement.textContent = dersler.length;
+      }
+      
+      // Son giriş zamanını göster
+      const lastLoginElement = document.getElementById('lastLogin');
+      if (lastLoginElement) {
+        const now = new Date();
+        lastLoginElement.textContent = now.toLocaleString('tr-TR');
+      }
+      
+      // Toplam işlem sayısını göster
+      const totalActionsElement = document.getElementById('totalActions');
+      if (totalActionsElement) {
+        const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+        const notlar = JSON.parse(localStorage.getItem('notlar')) || [];
+        const dersler = JSON.parse(localStorage.getItem('dersler')) || [];
+        const total = ogrenciler.length + notlar.length + dersler.length;
+        totalActionsElement.textContent = total;
+      }
+
+      // Grafikleri oluştur
+      createCharts();
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Öğrenci Yönetimi - Öğrenci Bilgi Sistemi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+  <style>
+    /* Tab metinlerinin rengini düzelt */
+    .nav-tabs .nav-link {
+      color: #333 !important;
+    }
+    
+    .nav-tabs .nav-link.active {
+      color: #fff !important;
+      background-color: #007bff !important;
+      border-color: #007bff !important;
+    }
+    
+    .nav-tabs .nav-link:hover {
+      color: #007bff !important;
+      border-color: #e9ecef #e9ecef #dee2e6 !important;
+    }
+    
+    .nav-tabs .nav-link.active:hover {
+      color: #fff !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-graduation-cap me-2"></i>ÖBS</h3>
+      <p>Öğrenci Bilgi Sistemi</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="ogrenci-ekle.html" class="nav-link active">
+          <i class="fas fa-user-plus"></i>
+          Öğrenci Yönetimi
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="dersler.html" class="nav-link">
+          <i class="fas fa-book"></i>
+          Dersler
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="notlar.html" class="nav-link">
+          <i class="fas fa-chart-bar"></i>
+          Notlar
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="raporlar.html" class="nav-link">
+          <i class="fas fa-file-alt"></i>
+          Raporlar
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="profil.html" class="nav-link">
+          <i class="fas fa-user"></i>
+          Profil
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link logout-btn text-danger">
+          <i class="fas fa-sign-out-alt"></i>
+          Çıkış
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button class="btn btn-primary d-md-none position-fixed top-0 start-0 m-3 mobile-menu-btn" style="z-index: 1001;">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+    
+    <div class="content-header fade-in">
+      <h1><i class="fas fa-user-plus me-2 text-gradient"></i>Öğrenci Yönetimi</h1>
+      <p>Öğrenci ekleyin, düzenleyin ve yönetin.</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="ogrenciTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="ekle-tab" data-bs-toggle="tab" data-bs-target="#ekle" type="button" role="tab">
+          <i class="fas fa-plus me-2"></i>Öğrenci Ekle
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="liste-tab" data-bs-toggle="tab" data-bs-target="#liste" type="button" role="tab">
+          <i class="fas fa-list me-2"></i>Öğrenci Listesi
+        </button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="ogrenciTabContent">
+      <!-- Öğrenci Ekleme Tab -->
+      <div class="tab-pane fade show active" id="ekle" role="tabpanel">
+        <div class="card">
+          <div class="card-header">
+            <h5><i class="fas fa-user-plus me-2"></i>Yeni Öğrenci Ekle</h5>
+          </div>
+          <div class="card-body">
+            <form id="ogrenciForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="ad" class="form-label">Ad *</label>
+                  <input type="text" class="form-control" id="ad" name="ad" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="soyad" class="form-label">Soyad *</label>
+                  <input type="text" class="form-control" id="soyad" name="soyad" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="numara" class="form-label">Öğrenci Numarası *</label>
+                  <input type="text" class="form-control" id="numara" name="numara" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="email" class="form-label">E-posta *</label>
+                  <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="telefon" class="form-label">Telefon</label>
+                  <input type="tel" class="form-control" id="telefon" name="telefon">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="bolum" class="form-label">Bölüm *</label>
+                  <select class="form-select" id="bolum" name="bolum" required>
+                    <option value="">Bölüm seçin</option>
+                    <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                    <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                    <option value="Elektrik-Elektronik Mühendisliği">Elektrik-Elektronik Mühendisliği</option>
+                    <option value="İnşaat Mühendisliği">İnşaat Mühendisliği</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="adres" class="form-label">Adres</label>
+                <textarea class="form-control" id="adres" name="adres" rows="3"></textarea>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-2"></i>Kaydet
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                  <i class="fas fa-undo me-2"></i>Temizle
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Öğrenci Listesi Tab -->
+      <div class="tab-pane fade" id="liste" role="tabpanel">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5><i class="fas fa-list me-2"></i>Öğrenci Listesi</h5>
+            <div class="d-flex gap-2">
+              <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Öğrenci ara..." style="width: 200px;">
+              <select class="form-select form-select-sm" id="bolumFilter" style="width: 150px;">
+                <option value="">Tüm Bölümler</option>
+                <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                <option value="Elektrik-Elektronik Mühendisliği">Elektrik-Elektronik Mühendisliği</option>
+                <option value="İnşaat Mühendisliği">İnşaat Mühendisliği</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Düzenleme Formu (Gizli) -->
+            <div id="editFormContainer" class="mb-4" style="display: none;">
+              <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0"><i class="fas fa-edit me-2"></i>Öğrenci Düzenle</h6>
+                </div>
+                <div class="card-body">
+                  <form id="ogrenciEditForm">
+                    <input type="hidden" id="editId">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="editAd" class="form-label">Ad *</label>
+                        <input type="text" class="form-control" id="editAd" name="ad" required>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="editSoyad" class="form-label">Soyad *</label>
+                        <input type="text" class="form-control" id="editSoyad" name="soyad" required>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="editNumara" class="form-label">Öğrenci Numarası *</label>
+                        <input type="text" class="form-control" id="editNumara" name="numara" required>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="editEmail" class="form-label">E-posta *</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="editTelefon" class="form-label">Telefon</label>
+                        <input type="tel" class="form-control" id="editTelefon" name="telefon">
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="editBolum" class="form-label">Bölüm *</label>
+                        <select class="form-select" id="editBolum" name="bolum" required>
+                          <option value="">Bölüm seçin</option>
+                          <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                          <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                          <option value="Elektrik-Elektronik Mühendisliği">Elektrik-Elektronik Mühendisliği</option>
+                          <option value="İnşaat Mühendisliği">İnşaat Mühendisliği</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editAdres" class="form-label">Adres</label>
+                      <textarea class="form-control" id="editAdres" name="adres" rows="3"></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-primary" onclick="updateOgrenci()">
+                        <i class="fas fa-save me-2"></i>Güncelle
+                      </button>
+                      <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                        <i class="fas fa-times me-2"></i>İptal
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Öğrenci Tablosu -->
+            <div id="tableContainer">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Ad Soyad</th>
+                      <th>Numara</th>
+                      <th>Bölüm</th>
+                      <th>E-posta</th>
+                      <th>Telefon</th>
+                      <th>İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ogrenciTableBody">
+                    <!-- Öğrenci listesi buraya yüklenecek -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="noDataMessage" class="text-center text-muted py-4" style="display: none;">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <p>Henüz öğrenci eklenmemiş.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Silme Onay Modal -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Öğrenci Sil
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bu öğrenciyi silmek istediğinizden emin misiniz?</p>
+          <p class="text-muted">Bu işlem geri alınamaz.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn btn-danger" onclick="confirmDeleteOgrenci()">
+            <i class="fas fa-trash me-2"></i>Sil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    let currentDeleteId = null;
+    let filteredOgrenciler = [];
+
+    // Sayfa yüklendiğinde
+    document.addEventListener('DOMContentLoaded', function() {
+      loadOgrenciler();
+      setupEventListeners();
+    });
+
+    // Event listener'ları ayarla
+    function setupEventListeners() {
+      // Form submit
+      const ogrenciForm = document.getElementById('ogrenciForm');
+      if (ogrenciForm) {
+        ogrenciForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          saveOgrenci();
+        });
+      }
+
+      // Arama ve filtreleme
+      const searchInput = document.getElementById('searchInput');
+      const bolumFilter = document.getElementById('bolumFilter');
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', filterOgrenciler);
+      }
+      
+      if (bolumFilter) {
+        bolumFilter.addEventListener('change', filterOgrenciler);
+      }
+
+      // Tab değişimi
+      const listeTab = document.getElementById('liste-tab');
+      if (listeTab) {
+        listeTab.addEventListener('click', function() {
+          loadOgrenciler();
+        });
+      }
+    }
+
+    // Öğrenci kaydet
+    function saveOgrenci() {
+      const formData = new FormData(document.getElementById('ogrenciForm'));
+      const ogrenci = {
+        id: Date.now(),
+        ad: formData.get('ad'),
+        soyad: formData.get('soyad'),
+        numara: formData.get('numara'),
+        email: formData.get('email'),
+        telefon: formData.get('telefon'),
+        bolum: formData.get('bolum'),
+        adres: formData.get('adres'),
+        createdAt: new Date().toISOString()
+      };
+
+      // Validasyon
+      if (!ogrenci.ad || !ogrenci.soyad || !ogrenci.numara || !ogrenci.email || !ogrenci.bolum) {
+        showAlert('Lütfen tüm zorunlu alanları doldurun!', 'error');
+        return;
+      }
+
+      // Numara kontrolü
+      const existingOgrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const numaraExists = existingOgrenciler.some(o => o.numara === ogrenci.numara);
+      if (numaraExists) {
+        showAlert('Bu öğrenci numarası zaten kullanılıyor!', 'error');
+        return;
+      }
+
+      // Email kontrolü
+      const emailExists = existingOgrenciler.some(o => o.email === ogrenci.email);
+      if (emailExists) {
+        showAlert('Bu e-posta adresi zaten kullanılıyor!', 'error');
+        return;
+      }
+
+      // Kaydet
+      existingOgrenciler.push(ogrenci);
+      localStorage.setItem('ogrenciler', JSON.stringify(existingOgrenciler));
+
+      showAlert('Öğrenci başarıyla eklendi!', 'success');
+      document.getElementById('ogrenciForm').reset();
+      loadOgrenciler();
+    }
+
+    // Öğrencileri yükle
+    function loadOgrenciler() {
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      filteredOgrenciler = [...ogrenciler];
+      renderOgrenciTable();
+    }
+
+    // Öğrenci tablosunu render et
+    function renderOgrenciTable() {
+      const tbody = document.getElementById('ogrenciTableBody');
+      const noDataMessage = document.getElementById('noDataMessage');
+
+      if (filteredOgrenciler.length === 0) {
+        tbody.innerHTML = '';
+        noDataMessage.style.display = 'block';
+        return;
+      }
+
+      noDataMessage.style.display = 'none';
+      tbody.innerHTML = filteredOgrenciler.map(ogrenci => `
+        <tr>
+          <td><strong>${ogrenci.ad} ${ogrenci.soyad}</strong></td>
+          <td><span class="badge bg-primary">${ogrenci.numara}</span></td>
+          <td>${ogrenci.bolum}</td>
+          <td>${ogrenci.email}</td>
+          <td>${ogrenci.telefon || '-'}</td>
+          <td>
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-primary" onclick="editOgrenci(${ogrenci.id})" title="Düzenle">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-outline-danger" onclick="deleteOgrenci(${ogrenci.id})" title="Sil">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Öğrenci düzenle
+    function editOgrenci(id) {
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const ogrenci = ogrenciler.find(o => o.id === id);
+      
+      if (!ogrenci) {
+        showAlert('Öğrenci bulunamadı!', 'error');
+        return;
+      }
+
+      // Form alanlarını doldur
+      document.getElementById('editId').value = ogrenci.id;
+      document.getElementById('editAd').value = ogrenci.ad;
+      document.getElementById('editSoyad').value = ogrenci.soyad;
+      document.getElementById('editNumara').value = ogrenci.numara;
+      document.getElementById('editEmail').value = ogrenci.email;
+      document.getElementById('editTelefon').value = ogrenci.telefon || '';
+      document.getElementById('editBolum').value = ogrenci.bolum;
+      document.getElementById('editAdres').value = ogrenci.adres || '';
+
+      // Düzenleme formunu göster, tabloyu gizle
+      document.getElementById('editFormContainer').style.display = 'block';
+      document.getElementById('tableContainer').style.display = 'none';
+
+      // Düzenleme formuna scroll
+      document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Düzenlemeyi iptal et
+    function cancelEdit() {
+      // Düzenleme formunu gizle, tabloyu göster
+      document.getElementById('editFormContainer').style.display = 'none';
+      document.getElementById('tableContainer').style.display = 'block';
+      
+      // Formu temizle
+      document.getElementById('ogrenciEditForm').reset();
+    }
+
+    // Öğrenci güncelle
+    function updateOgrenci() {
+      // Form verilerini al
+      const id = parseInt(document.getElementById('editId').value);
+      const ad = document.getElementById('editAd').value.trim();
+      const soyad = document.getElementById('editSoyad').value.trim();
+      const numara = document.getElementById('editNumara').value.trim();
+      const email = document.getElementById('editEmail').value.trim();
+      const telefon = document.getElementById('editTelefon').value.trim();
+      const bolum = document.getElementById('editBolum').value;
+      const adres = document.getElementById('editAdres').value.trim();
+
+      // Validasyon
+      if (!ad || !soyad || !numara || !email || !bolum) {
+        showAlert('Lütfen tüm zorunlu alanları doldurun!', 'error');
+        return;
+      }
+
+      // Öğrencileri al
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const index = ogrenciler.findIndex(o => o.id === id);
+
+      if (index === -1) {
+        showAlert('Öğrenci bulunamadı!', 'error');
+        return;
+      }
+
+      // Numara kontrolü (kendisi hariç)
+      const numaraExists = ogrenciler.some(o => o.id !== id && o.numara === numara);
+      if (numaraExists) {
+        showAlert('Bu öğrenci numarası zaten kullanılıyor!', 'error');
+        return;
+      }
+
+      // Email kontrolü (kendisi hariç)
+      const emailExists = ogrenciler.some(o => o.id !== id && o.email === email);
+      if (emailExists) {
+        showAlert('Bu e-posta adresi zaten kullanılıyor!', 'error');
+        return;
+      }
+
+      // Öğrenciyi güncelle
+      ogrenciler[index] = {
+        ...ogrenciler[index],
+        ad: ad,
+        soyad: soyad,
+        numara: numara,
+        email: email,
+        telefon: telefon,
+        bolum: bolum,
+        adres: adres,
+        updatedAt: new Date().toISOString()
+      };
+
+      // Kaydet
+      localStorage.setItem('ogrenciler', JSON.stringify(ogrenciler));
+
+      // Başarı mesajı
+      showAlert('Öğrenci başarıyla güncellendi!', 'success');
+
+      // Düzenleme formunu gizle, tabloyu göster
+      document.getElementById('editFormContainer').style.display = 'none';
+      document.getElementById('tableContainer').style.display = 'block';
+
+      // Listeyi yenile
+      loadOgrenciler();
+    }
+
+    // Öğrenci sil
+    function deleteOgrenci(id) {
+      currentDeleteId = id;
+      const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      modal.show();
+    }
+
+    // Silme işlemini onayla
+    function confirmDeleteOgrenci() {
+      if (!currentDeleteId) return;
+
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      const filteredOgrenciler = ogrenciler.filter(o => o.id !== currentDeleteId);
+      
+      localStorage.setItem('ogrenciler', JSON.stringify(filteredOgrenciler));
+      
+      showAlert('Öğrenci başarıyla silindi!', 'success');
+      
+      // Modal'ı kapat
+      const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+      modal.hide();
+      
+      currentDeleteId = null;
+      loadOgrenciler();
+    }
+
+    // Öğrencileri filtrele
+    function filterOgrenciler() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const bolumFilter = document.getElementById('bolumFilter').value;
+      
+      const ogrenciler = JSON.parse(localStorage.getItem('ogrenciler')) || [];
+      
+      filteredOgrenciler = ogrenciler.filter(ogrenci => {
+        const matchesSearch = !searchTerm || 
+          ogrenci.ad.toLowerCase().includes(searchTerm) ||
+          ogrenci.soyad.toLowerCase().includes(searchTerm) ||
+          ogrenci.numara.toLowerCase().includes(searchTerm) ||
+          ogrenci.email.toLowerCase().includes(searchTerm);
+        
+        const matchesBolum = !bolumFilter || ogrenci.bolum === bolumFilter;
+        
+        return matchesSearch && matchesBolum;
+      });
+      
+      renderOgrenciTable();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dersler - Öğrenci Bilgi Sistemi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-graduation-cap me-2"></i>ÖBS</h3>
+      <p>Öğrenci Bilgi Sistemi</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="ogrenci-ekle.html" class="nav-link">
+          <i class="fas fa-user-plus"></i>
+          Öğrenci Ekle
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="dersler.html" class="nav-link active">
+          <i class="fas fa-book"></i>
+          Dersler
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="notlar.html" class="nav-link">
+          <i class="fas fa-chart-bar"></i>
+          Notlar
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="profil.html" class="nav-link">
+          <i class="fas fa-user"></i>
+          Profil
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="#" class="nav-link logout-btn text-danger">
+          <i class="fas fa-sign-out-alt"></i>
+          Çıkış
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button class="btn btn-primary d-md-none position-fixed top-0 start-0 m-3 mobile-menu-btn" style="z-index: 1001;">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div id="alertContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+    <div class="content-header fade-in">
+      <h1><i class="fas fa-book me-2 text-gradient"></i>Dersler</h1>
+      <p>Ders bilgilerini ekleyin ve yönetin.</p>
+    </div>
+
+    <!-- Ders Ekleme Formu -->
+    <div class="form-container shadow-custom fade-in">
+      <h5 class="mb-3"><i class="fas fa-plus me-2"></i>Yeni Ders Ekle</h5>
+      <form id="dersForm">
+        <div class="row mb-3">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <label class="form-label" for="dersKodu">Ders Kodu</label>
+            <input type="text" class="form-control" id="dersKodu" name="dersKodu" placeholder="Örn: MAT101" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="dersAdi">Ders Adı</label>
+            <input type="text" class="form-control" id="dersAdi" name="dersAdi" placeholder="Ders Adı" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <label class="form-label" for="bolum">Bölüm</label>
+            <select class="form-select" id="bolum" name="bolum" required>
+              <option selected disabled value="">Bölüm Seçin</option>
+              <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+              <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+              <option value="Elektrik-Elektronik Mühendisliği">Elektrik-Elektronik Mühendisliği</option>
+              <option value="İnşaat Mühendisliği">İnşaat Mühendisliği</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="kredi">Kredi</label>
+            <input type="number" class="form-control" id="kredi" name="kredi" placeholder="3" min="1" max="10" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="aciklama">Açıklama</label>
+          <textarea class="form-control" id="aciklama" name="aciklama" rows="3" placeholder="Ders açıklaması..."></textarea>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">
+          <i class="fas fa-save me-2"></i>Ders Ekle
+        </button>
+      </form>
+    </div>
+
+    <!-- Ders Listesi -->
+    <div class="card mt-4 shadow-custom fade-in">
+      <div class="card-header">
+        <h5><i class="fas fa-list me-2"></i>Ders Listesi</h5>
+      </div>
+      <div class="card-body">
+        <div id="dersListesi">
+          <div class="text-center">
+            <div class="spinner"></div>
+            <p class="mt-2">Yükleniyor...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ders Düzenle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <input type="hidden" id="editId">
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label class="form-label" for="editDersKodu">Ders Kodu</label>
+                <input type="text" class="form-control" id="editDersKodu" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="editDersAdi">Ders Adı</label>
+                <input type="text" class="form-control" id="editDersAdi" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label class="form-label" for="editBolum">Bölüm</label>
+                <select class="form-select" id="editBolum" required>
+                  <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                  <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                  <option value="Elektrik-Elektronik Mühendisliği">Elektrik-Elektronik Mühendisliği</option>
+                  <option value="İnşaat Mühendisliği">İnşaat Mühendisliği</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="editKredi">Kredi</label>
+                <input type="number" class="form-control" id="editKredi" min="1" max="10" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="editAciklama">Açıklama</label>
+              <textarea class="form-control" id="editAciklama" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn btn-primary" onclick="updateDers()">Güncelle</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Ders ekleme formu
+    document.getElementById('dersForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const ders = {
+        id: generateId(),
+        dersKodu: formData.get('dersKodu').trim(),
+        dersAdi: formData.get('dersAdi').trim(),
+        bolum: formData.get('bolum'),
+        kredi: parseInt(formData.get('kredi')),
+        aciklama: formData.get('aciklama').trim(),
+        createdAt: new Date().toISOString()
+      };
+
+      // Validasyon
+      if (!validateDers(ders)) {
+        return;
+      }
+
+      // Ders kodu kontrolü
+      const existingDersler = getDersler();
+      if (existingDersler.some(d => d.dersKodu === ders.dersKodu)) {
+        showAlert('Bu ders kodu zaten kullanılıyor!', 'danger');
+        return;
+      }
+
+      // Kaydetme
+      existingDersler.push(ders);
+      localStorage.setItem('dersler', JSON.stringify(existingDersler));
+
+      showAlert('Ders başarıyla eklendi!', 'success');
+      e.target.reset();
+      loadDersler();
+    });
+
+    // Ders validasyonu
+    function validateDers(ders) {
+      if (!ders.dersKodu || ders.dersKodu.length < 3) {
+        showAlert('Ders kodu en az 3 karakter olmalıdır!', 'danger');
+        return false;
+      }
+      
+      if (!ders.dersAdi || ders.dersAdi.length < 2) {
+        showAlert('Ders adı en az 2 karakter olmalıdır!', 'danger');
+        return false;
+      }
+      
+      if (!ders.bolum) {
+        showAlert('Lütfen bölüm seçiniz!', 'danger');
+        return false;
+      }
+      
+      if (!ders.kredi || ders.kredi < 1 || ders.kredi > 10) {
+        showAlert('Kredi 1-10 arasında olmalıdır!', 'danger');
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Dersleri yükle
+    function loadDersler() {
+      const dersler = getDersler();
+      const container = document.getElementById('dersListesi');
+      
+      if (dersler.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Henüz ders eklenmemiş.</p>';
+        return;
+      }
+      
+      let html = '<div class="table-responsive"><table class="table">';
+      html += '<thead><tr><th>Ders Kodu</th><th>Ders Adı</th><th>Bölüm</th><th>Kredi</th><th>Açıklama</th><th>İşlemler</th></tr></thead><tbody>';
+      
+      dersler.forEach(ders => {
+        html += `<tr>
+          <td><strong>${escapeHtml(ders.dersKodu)}</strong></td>
+          <td>${escapeHtml(ders.dersAdi)}</td>
+          <td><span class="badge bg-primary">${escapeHtml(ders.bolum)}</span></td>
+          <td><span class="badge bg-info">${ders.kredi}</span></td>
+          <td>${escapeHtml(ders.aciklama || '-')}</td>
+          <td>
+            <button class="btn btn-sm btn-warning me-1" onclick="editDers('${ders.id}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteDers('${ders.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>`;
+      });
+      
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+    }
+
+    // Ders düzenleme modalını aç
+    function editDers(id) {
+      const dersler = getDersler();
+      const ders = dersler.find(d => d.id === id);
+      
+      if (!ders) return;
+      
+      document.getElementById('editId').value = ders.id;
+      document.getElementById('editDersKodu').value = ders.dersKodu;
+      document.getElementById('editDersAdi').value = ders.dersAdi;
+      document.getElementById('editBolum').value = ders.bolum;
+      document.getElementById('editKredi').value = ders.kredi;
+      document.getElementById('editAciklama').value = ders.aciklama || '';
+      
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    // Ders güncelleme
+    function updateDers() {
+      const id = document.getElementById('editId').value;
+      const dersKodu = document.getElementById('editDersKodu').value.trim();
+      const dersAdi = document.getElementById('editDersAdi').value.trim();
+      const bolum = document.getElementById('editBolum').value;
+      const kredi = parseInt(document.getElementById('editKredi').value);
+      const aciklama = document.getElementById('editAciklama').value.trim();
+      
+      const ders = { id, dersKodu, dersAdi, bolum, kredi, aciklama };
+      
+      if (!validateDers(ders)) {
+        return;
+      }
+      
+      // Ders kodu kontrolü (kendisi hariç)
+      const existingDersler = getDersler();
+      if (existingDersler.some(d => d.dersKodu === dersKodu && d.id !== id)) {
+        showAlert('Bu ders kodu zaten kullanılıyor!', 'danger');
+        return;
+      }
+      
+      // Güncelleme
+      const updatedDersler = existingDersler.map(d => d.id === id ? ders : d);
+      localStorage.setItem('dersler', JSON.stringify(updatedDersler));
+      
+      showAlert('Ders başarıyla güncellendi!', 'success');
+      bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+      loadDersler();
+    }
+
+    // Ders silme
+    function deleteDers(id) {
+      if (!confirm('Bu dersi silmek istediğinizden emin misiniz?')) {
+        return;
+      }
+      
+      const dersler = getDersler().filter(d => d.id !== id);
+      localStorage.setItem('dersler', JSON.stringify(dersler));
+      
+      showAlert('Ders başarıyla silindi!', 'success');
+      loadDersler();
+    }
+
+    // Yardımcı fonksiyonlar
+    function getDersler() {
+      return JSON.parse(localStorage.getItem('dersler')) || [];
+    }
+
+    // Sayfa yüklendiğinde dersleri yükle
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDersler();
+    });
+  </script>
+</body>
+</html> 
